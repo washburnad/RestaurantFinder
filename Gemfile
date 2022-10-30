@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.0'
+ruby '3.0.4'
 
 gem 'devise', '~> 4.8'
 gem 'httparty', '~> 0.20'
@@ -21,7 +21,7 @@ gem 'bootsnap', '>= 1.4.4', require: false
 # gem 'rack-cors'
 
 group :development, :test do
-  gem 'pry-byebug', '~> 3.10'
+  gem 'pry', '~> 0.14'
 end
 
 group :development do
