@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.4'
+ruby '3.0.0'
 
 gem 'devise', '~> 4.8'
 gem 'httparty', '~> 0.20'
