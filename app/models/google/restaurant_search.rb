@@ -1,3 +1,6 @@
+# A service object that runs the GoogleApi::GetNearbyLocationsRequest
+# and decorates the response to note the user's favorite restaurants
+
 module Google
   class RestaurantSearch
     attr_reader :error, :results
@@ -11,15 +14,10 @@ module Google
     end
 
     def run
-      make_request
-      
-      @results = @request.response['results']
+      restaurants = make_request      
+      @results = add_user_favorite_field(restaurants)
 
-      @results.map do |result|
-        result['user_favorite'] = favorite_place_ids.include?(result['place_id'])
-      end
-      
-      @results
+      true
     rescue GoogleApi::GoogleRequestError => error 
       @error = error.message
       
@@ -30,6 +28,14 @@ module Google
 
     attr_reader :keyword, :latitude, :longitude, :type, :user
 
+    def add_user_favorite_field(restaurants)
+      restaurants.map do |restaurant|
+        restaurant['user_favorite'] = favorite_place?(restaurant['place_id'])
+
+        restaurant
+      end
+    end
+
     def config
       GoogleApi::Config.new.tap do |config|
         config.api_key = Rails.application.credentials.config[:google][:api_key]
@@ -37,20 +43,23 @@ module Google
     end
 
     def favorite_place_ids
-      @favorite_place_ids ||= UserFavorite.where(
-        user_id: user.id,
-        place_id: @results.map { |location| location['place_id'] }
-      ).map(&:place_id)
+      @favorite_place_ids ||= user.favorites.map(&:place_id)
+    end
+
+    def favorite_place?(place_id)
+      favorite_place_ids.include?(place_id)
     end
 
     def make_request
-      @request = GoogleApi::GetNearbyLocationsRequest.new(
+      request = GoogleApi::GetNearbyLocationsRequest.new(
         config: config,
         keyword: keyword,
         latitude: latitude,
         longitude: longitude,
         type: type
       ).run 
+      
+      request.response['results']
     end
   end
 end
