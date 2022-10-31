@@ -2,6 +2,8 @@ class SearchController < ApplicationController
   def create
     search = Google::RestaurantSearch.new(search_params, current_user)
         
+    require 'pry'; binding.pry
+    
     if search.run 
       render json: search.results.to_json
     else
