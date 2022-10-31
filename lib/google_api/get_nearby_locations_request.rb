@@ -47,12 +47,16 @@ module GoogleApi
       "#{config.base_uri}/maps/api/place/nearbysearch/json"
     end
 
-    def validate_request      
-      if @response.key?('error_message').present?
-        raise(GoogleRequestError, 
-          "#{@response['status']}, #{@response['error_message']}"
-        )
-      elsif !@response.success?
+    def validate_request 
+      if @response.success?
+        parsed_response = @response.parsed_response  
+        
+        if parsed_response.key?('error_message')          
+          raise(GoogleRequestError, 
+            "#{parsed_response['status']}, #{parsed_response['error_message']}"
+          )
+        end
+      else
         raise(GoogleRequestError, @response)
       end
     end
