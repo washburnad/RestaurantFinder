@@ -22,6 +22,8 @@ module GoogleApi
 
     private 
 
+    attr_reader :config, :keyword, :latitude, :longitude, :type
+    
     def location 
       "#{latitude},#{longitude}"
     end
@@ -60,7 +62,5 @@ module GoogleApi
         raise(GoogleRequestError, @response)
       end
     end
-
-    attr_reader :config, :keyword, :latitude, :longitude, :type
   end
 end
